@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 
 #RNN class
-class RNN(object):
+class RNN:
     def __init__(self, num_steps, input_size, output_size, num_cells_1a, num_cells_2a, num_cells_1b, num_cells_2b, num_cells_1c, num_cells_1d, num_cells_1e, batch_size, start_learning_rate, global_step, decay_steps, end_learning_rate, power_decay, learning_algo):
         #Tensorflow inputs
         with tf.name_scope('inputs'):
@@ -214,8 +214,7 @@ for epoch in range(useEpochs):
             print('Initial cost is of Epoch', (epoch + 1), 'is', loss)
         elif (cycle + 1) % 10 == 0:
             print('Epoch', (epoch + 1), 'Cycle', (cycle + 1), 'cost is', loss)
-            #result = sess.run(merged, feed_dict)
-            #writer.add_summary(result, cycle)
+
 
 
 
