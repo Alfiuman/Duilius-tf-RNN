@@ -109,6 +109,7 @@ decaySteps = numEpochs * learnCycles
 endLearningRate = 0.000001
 powerDecay = 0.5
 learningAlgo = 1
+gpu = 0
 seedNo = 1
 plotLosses = 0
 test = 0
@@ -123,9 +124,12 @@ np.random.seed(seedNo)
 
 model = RNN(timeSteps, inputSize, outputSize, numCells1a, numCells2a, numCells1b, numCells2b, numCells1c, numCells1d, numCells1e, batchSize, startLearnRate, globalStep, decaySteps, endLearningRate, powerDecay, learningAlgo)
 
-sess = tf.InteractiveSession()
-merged = tf.summary.merge_all()
-writer = tf.summary.FileWriter("Summary", sess.graph)
+#Selecting the running mode
+if gpu == 0:
+    config = tf.ConfigProto(device_count = {'GPU': 0})
+    sess = tf.InteractiveSession(config=config)
+else:
+    sess = tf.InteractiveSession()    
 
 init = tf.global_variables_initializer()
 sess.run(init)
