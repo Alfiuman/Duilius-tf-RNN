@@ -130,6 +130,7 @@ gpu = 0
 seedNo = 1
 plotLosses = 0
 epochReduction = 1
+epochStop = int(numEpochs * 0.9)
 cycleReduction = 1000
 ###########################################################################################################
 
@@ -190,6 +191,8 @@ for epoch in range(numEpochs):
     
     if epoch == epochReduction:
         learnCycles /= cycleReduction
+    elif epoch == epochStop:
+        learnCycles = 1
     
     #Cycle training
     for cycle in range(int(learnCycles)):
