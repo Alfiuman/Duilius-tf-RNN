@@ -15,7 +15,7 @@ class RNN:
             self.y = tf.placeholder(tf.float32, [batchSize, num_steps, output_size], name='y')
             self.globalStep = tf.Variable(global_step, trainable=False)
             self.learnRate = tf.train.polynomial_decay(start_learning_rate, self.globalStep, decay_steps, end_learning_rate, power_decay, name='learning_rate')
-        
+            
         #First RNN module of the first layer
         with tf.variable_scope('lstm_1a'):
             self.lstm1a = tf.nn.rnn_cell.LSTMCell(num_cells_1a, forget_bias=1.0, state_is_tuple=True)
