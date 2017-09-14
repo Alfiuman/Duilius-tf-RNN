@@ -1,7 +1,6 @@
 
 
 
-
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
@@ -69,18 +68,26 @@ class RNN:
         #Full connected hidden layer
         with tf.variable_scope('hidden_layer_3'):
             self.rnnOutVal = tf.reshape(tf.concat([self.gruOutput2a, self.lstmOutput2b, self.lstmOutput1c, self.gruOutput1d, self.lstmOutput1e], 2), [-1, num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e], name='rnnOutVal')
-            self.weightsOut = tf.get_variable(shape=[num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e, int((num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e) / 2)], initializer=tf.random_normal_initializer(mean=0., stddev=1.,), name='weights_hidden_3')
-            self.biasOut = tf.get_variable(shape=[int((num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e) / 2), ], initializer=tf.constant_initializer(0.1), name='bias_hidden_3')
+            self.weightsFC3 = tf.get_variable(shape=[num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e, num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e], initializer=tf.random_normal_initializer(mean=0., stddev=1.,), name='weights_hidden_3')
+            self.biasFC3 = tf.get_variable(shape=[num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e], initializer=tf.constant_initializer(0.1), name='bias_hidden_3')
             with tf.name_scope('hidden_regressor_3'):
-                self.hidd = tf.matmul(self.rnnOutVal, self.weightsOut) + self.biasOut
-                self.hidd = tf.nn.dropout(self.hidd, keep_rate_pass, seed=seed_num, name='Dropout_hidden_3')
+                self.fc3 = tf.matmul(self.rnnOutVal, self.weightsFC3) + self.biasFC3
+                self.fc3 = tf.nn.dropout(self.fc3, keep_rate_pass, seed=seed_num, name='Dropout_hidden_3')
+        
+        #Second full connected hidden layer
+        with tf.variable_scope('hidden_layer_4'):
+            self.weightsFC4 = tf.get_variable(shape=[num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e, int((num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e) / 2)], initializer=tf.random_normal_initializer(mean=0., stddev=1.,), name='weights_hidden_4')
+            self.biasFC4 = tf.get_variable(shape=[int((num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e) / 2)], initializer=tf.constant_initializer(0.1), name='bias_hidden_4')
+            with tf.name_scope('hidden_regressor_4'):
+                self.fc4 = tf.matmul(self.fc3, self.weightsFC4) + self.biasFC4
+                self.fc4 = tf.nn.dropout(self.fc4, keep_rate_pass, seed=seed_num, name='Dropout_hidden_4')
         
         #Output layer for regression
         with tf.variable_scope('output_layer'):
             self.weightsOut = tf.get_variable(shape=[int((num_cells_2a + num_cells_2b + num_cells_1c + num_cells_1d + num_cells_1e) / 2), output_size], initializer=tf.random_normal_initializer(mean=0., stddev=1.,), name='weights_output')
-            self.biasOut = tf.get_variable(shape=[output_size, ], initializer=tf.constant_initializer(0.1), name='bias_output')
+            self.biasOut = tf.get_variable(shape=[output_size], initializer=tf.constant_initializer(0.1), name='bias_output')
             with tf.name_scope('output_regressor'):
-                self.pred = tf.matmul(self.hidd, self.weightsOut) + self.biasOut
+                self.pred = tf.matmul(self.fc4, self.weightsOut) + self.biasOut
         
         #Computation of the losses        
         with tf.name_scope('losses'):
