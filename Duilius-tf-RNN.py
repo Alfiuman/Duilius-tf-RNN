@@ -16,16 +16,7 @@ class RNN:
             self.y = tf.placeholder(tf.float32, [batchSize, num_steps, output_size], name='y')
             self.globalStep = tf.Variable(global_step, trainable=False)
             self.learnRate = tf.train.polynomial_decay(start_learning_rate, self.globalStep, decay_steps, end_learning_rate, power_decay, name='learning_rate')
-        """
-        #First fully connected layer
-        with tf.name_scope('fully_conn_1'):
-            self.x
-            self.weightsFC1 = tf.get_variable(shape=[batchSize, num_steps, input_size], initializer=tf.random_normal_initializer(mean=0., stddev=1.,), name='weights_FC_1')
-            self.biasFC1 = tf.get_variable(shape=[batchSize, num_steps, input_size], initializer=tf.constant_initializer(0.1), name='bias_FC_1')
-            with tf.name_scope('fully_conn_regr_1'):
-                self.fc1 = tf.matmul(self.x, self.weightsFC1) + self.biasFC1
-                self.fc1 = tf.nn.dropout(self.fc1, keep_rate_pass, seed=seed_num, name='Dropout_FC_1')
-        """
+        
         #First RNN module of the first layer
         with tf.variable_scope('lstm_1a'):
             self.lstm1a = tf.nn.rnn_cell.LSTMCell(num_cells_1a, forget_bias=1.0, state_is_tuple=True)
@@ -126,8 +117,8 @@ numCells2b = 32
 numCells1c = 32
 numCells1d = 32
 numCells1e = 32
-numEpochs = 100
-learnCycles = 5000
+numEpochs = 500
+learnCycles = 10000
 startLearnRate = 0.04
 globalStep = 0
 decaySteps = numEpochs * learnCycles
@@ -139,7 +130,7 @@ gpu = 0
 seedNo = 1
 plotLosses = 0
 epochReduction = 1
-cycleReduction = 500
+cycleReduction = 1000
 ###########################################################################################################
 
 
@@ -193,8 +184,8 @@ for epoch in range(numEpochs):
     
     xPrep = gen[batchSize * epoch:(batchSize * (epoch + 1)), :timeSteps]
     yPrep = gen[batchSize * epoch:(batchSize * (epoch + 1)), 1:]
-    xx = np.sin(xPrep)[:, :, np.newaxis]
-    yy = np.sin(yPrep)[:, :, np.newaxis]
+    xx = np.add(np.sin(xPrep), np.cos(xPrep))[:, :, np.newaxis]
+    yy = np.add(np.sin(yPrep), np.cos(yPrep))[:, :, np.newaxis]
     startingPoint += timeSteps * batchSize
     
     if epoch == epochReduction:
