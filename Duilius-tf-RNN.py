@@ -4,6 +4,7 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+import copy
 
 
 #RNN class
@@ -138,7 +139,7 @@ seedNo = 1
 plotLosses = 0
 epochReduction = 1
 epochStop = int(numEpochs * 0.9)
-cycleReduction = 1000
+cyclesReduced = 10
 ###########################################################################################################
 
 
@@ -190,14 +191,14 @@ changeEpochRes = []
 #Epoch training
 for epoch in range(numEpochs):
     
-    xPrep = gen[batchSize * epoch:(batchSize * (epoch + 1)), :timeSteps]
-    yPrep = gen[batchSize * epoch:(batchSize * (epoch + 1)), 1:]
+    xPrep = copy.deepcopy(gen[batchSize * epoch:(batchSize * (epoch + 1)), :timeSteps])
+    yPrep = copy.deepcopy(gen[batchSize * epoch:(batchSize * (epoch + 1)), 1:])
     xx = np.add(np.sin(xPrep), np.cos(xPrep))[:, :, np.newaxis]
     yy = np.add(np.sin(yPrep), np.cos(yPrep))[:, :, np.newaxis]
     startingPoint += timeSteps * batchSize
     
     if epoch == epochReduction:
-        learnCycles /= cycleReduction
+        learnCycles = cyclesReduced
     elif epoch == epochStop:
         learnCycles = 1
     
@@ -249,6 +250,10 @@ for epoch in range(numEpochs):
             print('Epoch', (epoch + 1), 'Cycle', (cycle + 1), 'cost is', loss)
 
 print('Epoch change errors are', changeEpochRes)
+
+
+
+
 
 
 
