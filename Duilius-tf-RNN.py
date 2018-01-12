@@ -249,6 +249,8 @@ for epoch in range(numEpochs):
         elif (cycle + 1) % 10 == 0:
             print('Epoch', (epoch + 1), 'Cycle', (cycle + 1), 'cost is', loss)
 
+sess.close()
+
 print('Epoch change errors are', changeEpochRes)
 
 
