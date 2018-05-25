@@ -134,6 +134,7 @@ endLearningRate = 0.000001
 powerDecay = 0.5
 learningAlgo = 1
 rateKeepDropOutPass = 0.667
+lambdaL2Reg = 0.005
 gpu = 0
 seedNo = 1
 plotLosses = 0
@@ -235,6 +236,9 @@ for epoch in range(numEpochs):
         )
     
         totLoss.append(loss) 
+        
+        l2 = lambdaL2Reg * sum(tf.nn.l2_loss(tf_var) for tf_var in tf.trainable_variables() if not ("bias" in tf_var.name))
+        model.loss += l2
         
         #Plotting the losses
         if plotLosses == 1:
